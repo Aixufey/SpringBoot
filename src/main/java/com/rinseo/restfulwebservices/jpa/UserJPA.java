@@ -1,6 +1,7 @@
 package com.rinseo.restfulwebservices.jpa;
 
 
+import com.rinseo.restfulwebservices.entity.Post;
 import com.rinseo.restfulwebservices.entity.User;
 import com.rinseo.restfulwebservices.exceptions.UserNotFoundException;
 import jakarta.validation.Valid;
@@ -56,4 +57,13 @@ public class UserJPA {
     }
 
     // Endpoints for posts, user has many posts
+    @GetMapping(path = "/jpa/users/{id}/posts")
+    public List<Post> getPostsByUserId(@PathVariable int id) {
+        var user = repo.findById(id);
+        if (user.isEmpty()) {
+            throw new UserNotFoundException("id: ".concat(String.valueOf(id)));
+        }
+
+        return user.get().getPosts();
+    }
 }

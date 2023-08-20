@@ -12,5 +12,8 @@ INSERT INTO post (id, description, user_id)
 VALUES (2, 'This is my second post', 1);
 INSERT INTO post (id, description, user_id)
 VALUES (3, 'This is my final post', 1); */
-
+INSERT INTO post (id, description, user_id)
+VALUES (1, 'test test', 1);
+INSERT INTO post (id, description, user_id)
+VALUES (2, 'test test', 1);
 
