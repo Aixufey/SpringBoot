@@ -1,9 +1,8 @@
-package com.rinseo.restfulwebservices.controller;
+package com.rinseo.restfulwebservices.jpa;
 
 
 import com.rinseo.restfulwebservices.entity.User;
 import com.rinseo.restfulwebservices.exceptions.UserNotFoundException;
-import com.rinseo.restfulwebservices.service.UserDAOService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,42 +10,37 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
+
+/**
+ * A controller that uses JPA interface to access the database.
+ */
 @RestController
-public class UserController {
-    // Constructor-based dependency injection
-    private UserDAOService dao;
-    public UserController(UserDAOService dao) {
-        this.dao = dao;
+public class UserJPA {
+    private UserRepository repo;
+
+    public UserJPA(UserRepository repo) {
+        this.repo = repo;
     }
 
-    // Get all users
-    // http://localhost:8082/users
-    @GetMapping(path = "/users")
+    @GetMapping(path = "/jpa/users")
     public List<User> getAllUsers() {
-        return dao.getAll();
+        return repo.findAll();
     }
 
-    // Get a user by id
-    // http://localhost:8082/users/1
-    @GetMapping(path = "/users/{id}")
-    public User getUserById(@PathVariable int id) {
-        User user = dao.getById(id);
-        if (user == null) {
+    @GetMapping(path = "/jpa/users/{id}")
+    public Optional<User> getUserById(@PathVariable int id) {
+        Optional<User> user = repo.findById(id);
+        if (user.isEmpty()) {
             throw new UserNotFoundException("id: ".concat(String.valueOf(id)));
         }
         return user;
     }
 
-    /**
-     * Post a user
-     * http://localhost:8082/users and payload in body
-     * @param user
-     * @return 201 with a location-header URI e.g. http://localhost:8082/users/3
-     */
-    @PostMapping("/users")
+    @PostMapping("/jpa/users")
     public ResponseEntity<Object> createUser(@Valid @RequestBody User user) {
-        User savedUser = dao.save(user);
+        User savedUser = repo.save(user);
         // /users/3 => /users/{id} => savedUser.getId()
         URI location = ServletUriComponentsBuilder.
                 fromCurrentRequestUri()
@@ -56,9 +50,10 @@ public class UserController {
         return ResponseEntity.created(location).build();
     }
 
-    // Delete a user by id
-    @DeleteMapping("/users/{id}")
+    @DeleteMapping("/jpa/users/{id}")
     public void deleteUser(@PathVariable int id) {
-        dao.deleteById(id);
+        repo.deleteById(id);
     }
+
+    // Endpoints for posts, user has many posts
 }
