@@ -2,6 +2,7 @@ package com.rinseo.restfulwebservices.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 
@@ -14,8 +15,9 @@ public class Post {
     private String description;
 
     // Map the relationship between User and Post
+    // "Forward" side of the relationship that should be serialized normally.
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnore
+    @JsonManagedReference
     private User user;
 
     public Integer getId() {
@@ -32,6 +34,14 @@ public class Post {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override

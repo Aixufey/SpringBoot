@@ -20,9 +20,11 @@ import java.util.Optional;
 @RestController
 public class UserJPA {
     private UserRepository repo;
+    private PostRepository postRepo;
 
-    public UserJPA(UserRepository repo) {
+    public UserJPA(UserRepository repo, PostRepository postRepo) {
         this.repo = repo;
+        this.postRepo = postRepo;
     }
 
     @GetMapping(path = "/jpa/users")
@@ -65,5 +67,24 @@ public class UserJPA {
         }
 
         return user.get().getPosts();
+    }
+
+    @PostMapping("/jpa/users/{id}/posts")
+    public ResponseEntity<Object> createPostByUserId(@PathVariable int id, @Valid @RequestBody Post post) {
+        var user = repo.findById(id);
+
+        if (user.isEmpty()) {
+            throw new UserNotFoundException("id: ".concat(String.valueOf(id)));
+        }
+
+        post.setUser(user.get());
+        Post savedPost = postRepo.save(post);
+
+        URI location = ServletUriComponentsBuilder.
+                fromCurrentRequestUri()
+                .path("/{id}")
+                .buildAndExpand(savedPost.getId())
+                .toUri();
+        return ResponseEntity.created(location).build();
     }
 }

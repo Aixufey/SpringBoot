@@ -1,5 +1,6 @@
 package com.rinseo.restfulwebservices.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Past;
@@ -23,8 +24,9 @@ public class User {
     private LocalDate birthDate;
 
     // Single user has many posts -> one to many
+    // "Reverse" side of the relationship that should be ignored during serialization.
     @OneToMany(mappedBy = "user")
-    @JsonIgnore
+    @JsonBackReference
     private List<Post> posts;
 
     protected User() {
