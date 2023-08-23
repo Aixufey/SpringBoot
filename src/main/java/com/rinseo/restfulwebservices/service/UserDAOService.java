@@ -21,22 +21,28 @@ public class UserDAOService {
     private static List<User> users = new ArrayList<>();
     private static int usersCount = 0;
     static {
-        users.add(new User(++usersCount, "Eva", LocalDate.now().minusYears(10)));
-        users.add(new User(++usersCount, "Adam", LocalDate.now().minusYears(20)));
+        users.add(new User(++usersCount, "Dummy 1", LocalDate.now().minusYears(10)));
+        users.add(new User(++usersCount, "Dummy 2", LocalDate.now().minusYears(20)));
+        users.add(new User(++usersCount, "Dummy 3", LocalDate.now().minusYears(30)));
     }
 
-    public List getAll() {
+    public List<User> getAll() {
         return users;
     }
 
     public User getById(int id) {
         Predicate<? super User> predicate = user -> user.getId().equals(id);
-        return users.stream().filter(predicate).findFirst().get();
+        return users.stream().filter(predicate).findFirst().orElse(null);
     }
 
     public User save(User user) {
         user.setId(++usersCount);
         users.add(user);
         return user;
+    }
+
+    public void deleteById(int id) {
+        Predicate<? super User> predicate = u -> u.getId().equals(id);
+        users.removeIf(predicate);
     }
 }
